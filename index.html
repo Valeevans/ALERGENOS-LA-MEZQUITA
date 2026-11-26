@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alérgenos · La Mezquita</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: hospitalario, claro y serio — es información de salud para el comensal
+   IDEA: la carta del restaurante, con un sello de alérgenos en cada plato
+   PICTURE: el selector "¿Qué tenés que evitar?" funcionando arriba, y la carta marcada debajo
+   COLOUR and TYPE: verde La Mezquita 2F5233 dominante, blanco, acento rojo para "contiene"; Playfair + Figtree
+   LAYOUT: cabecera verde a todo el ancho, selector, carta en una columna calma por secciones */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#121814);--ink:light-dark(#1b221d,#eef2ee);--soft:light-dark(#5b6660,#a9b5ad);
+--green:#2F5233;--green2:light-dark(#e6eee6,#1e2b21);--line:light-dark(#e3e8e3,#2a352d);
+--red:light-dark(#b3261e,#ff8a80);--redbg:light-dark(#fdecea,#3a1d1b);
+--amber:light-dark(#8a5a00,#ffcc66);--amberbg:light-dark(#fff4dc,#3a2e14);
+--ok:light-dark(#2F5233,#9fd3a6);--okbg:light-dark(#e9f3ea,#1c2e20);--card:light-dark(#fff,#18201a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif;overflow-x:clip}
+html{scroll-padding-top:120px}
+header{background:var(--green);color:#fff;padding:clamp(28px,5vw,56px) max(5vw,18px) 26px}
+.wrap{max-width:760px;margin:0 auto}
+.brand{font:600 14px/1 Figtree,sans-serif;opacity:.85;margin:0 0 10px}
+h1{font:700 clamp(32px,7vw,48px)/1.05 "Playfair Display",Georgia,serif;margin:0 0 12px;text-wrap:balance}
+header p{margin:0;max-width:60ch;opacity:.92}
+.picker{background:var(--green);color:#fff;padding:0 max(5vw,18px) 26px}
+.picker h2{font:600 17px/1.3 Figtree,sans-serif;margin:0 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1.5px solid rgba(255,255,255,.55);background:transparent;color:#fff;font:600 16px Figtree,sans-serif;min-height:44px;padding:8px 16px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip[aria-pressed=true]{background:#fff;color:var(--green);border-color:#fff}
+.chip[aria-pressed=true]::before{content:"✕";font-size:13px}
+.chip:focus-visible,.tool:focus-visible,input:focus-visible,nav a:focus-visible{outline:3px solid #f2c14e;outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:16px}
+.row label{display:inline-flex;gap:8px;align-items:center;min-height:44px;cursor:pointer;font-weight:500}
+.row input[type=checkbox]{width:20px;height:20px;accent-color:#fff}
+.tool{appearance:none;background:none;border:0;color:#fff;text-decoration:underline;font:500 16px Figtree,sans-serif;min-height:44px;cursor:pointer;padding:0}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px max(5vw,18px)}
+.bar .wrap{display:flex;flex-direction:column;gap:8px}
+#q{width:100%;font:16px Figtree,sans-serif;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-height:44px}
+nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav a{flex:none;color:var(--green);color:var(--ok);text-decoration:none;font-weight:600;font-size:14px;padding:6px 12px;border-radius:999px;background:var(--green2)}
+main{padding:8px max(5vw,18px) 40px}
+.status{margin:18px 0 0;font-weight:600;color:var(--soft)}
+section h3{font:700 26px/1.1 "Playfair Display",Georgia,serif;margin:34px 0 6px;color:var(--ok)}
+.dish{padding:16px 0;border-bottom:1px solid var(--line)}
+.dish h4{margin:0 0 8px;font-size:17px;font-weight:700;line-height:1.3}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:14px;font-weight:600;padding:3px 10px;border-radius:6px;background:var(--green2);color:var(--ink);white-space:nowrap}
+.tag.hit{background:var(--redbg);color:var(--red)}
+.tag.maybe{background:var(--amberbg);color:var(--amber)}
+.tag.may{background:transparent;border:1.5px dashed var(--line);color:var(--soft)}
+.verdict{display:block;margin-top:8px;font-size:14px;font-weight:700}
+.verdict.no{color:var(--red)}.verdict.mid{color:var(--amber)}.verdict.yes{color:var(--ok)}
+.dish.out{display:none}
+.empty{display:none;padding:24px 0;color:var(--soft)}
+.legend{margin:22px 0 0;padding:16px;border-radius:12px;background:var(--green2);font-size:15px}
+.legend p{margin:0 0 6px}.legend p:last-child{margin:0}
+footer{background:var(--green);color:#fff;padding:30px max(5vw,18px) 40px;font-size:15px}
+footer strong{display:block;font:700 22px/1.2 "Playfair Display",Georgia,serif;margin-bottom:8px}
+footer p{margin:0 0 10px;max-width:62ch}
+footer small{opacity:.8;font-size:13px}
+@media (prefers-reduced-motion:no-preference){.dish{transition:background .25s}.dish.flash{background:var(--green2)}}
+@media(min-width:900px){.bar .wrap{flex-direction:row;align-items:center}#q{max-width:300px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <p class="brand">La Mezquita · Bar &amp; Restaurante</p>
+  <h1>Alérgenos de nuestra carta</h1>
+  <p>Elegí los alérgenos que tenés que evitar y te marcamos qué platos los contienen.</p>
+</div></header>
+
+<div class="picker"><div class="wrap">
+  <h2>¿Qué tenés que evitar?</h2>
+  <div class="chips" id="chips"></div>
+  <div class="row">
+    <label><input type="checkbox" id="hide"> Ocultar los platos que lo contienen</label>
+    <button class="tool" id="clear" type="button">Limpiar selección</button>
+  </div>
+</div></div>
+
+<div class="bar"><div class="wrap">
+  <input id="q" type="search" placeholder="Buscar un plato…" aria-label="Buscar un plato" autocomplete="off">
+  <nav id="nav" aria-label="Secciones de la carta"></nav>
+</div></div>
+
+<main><div class="wrap">
+  <p class="status" id="status" aria-live="polite"></p>
+  <div id="menu"></div>
+  <p class="empty" id="empty">No encontramos platos con esa búsqueda.</p>
+  <div class="legend">
+    <p><strong>Cómo leer la ficha</strong></p>
+    <p><span class="tag hit">Contiene</span> el plato lleva ese alérgeno.</p>
+    <p><span class="tag maybe">Puede contener</span> depende de la pasta que elijas o de un agregado opcional: consultá al mozo.</p>
+  </div>
+</div></main>
+
+<footer><div class="wrap">
+  <strong>Antes de pedir, avisanos</strong>
+  <p>Si tenés alguna alergia o intolerancia, decíselo a quien te atiende. En nuestra cocina se manipulan todos estos alérgenos, por lo que no podemos descartar el contacto cruzado (trazas).</p>
+  <p>Esta información se basa en las recetas estándar de cada plato y puede cambiar con la carta o con los proveedores.</p>
+  <small>Ficha de alérgenos · Rev. 00 · Noviembre 2026</small>
+</div></footer>
+
+<script>
+{
+const A=["Gluten","Lácteos","Huevo","Frutos secos","Soja","Pescado","Crustáceos","Moluscos"];
+// "Huevo*p" = puede contener huevo según la pasta · "Huevo*a" = huevo en agregado opcional
+const M=[
+ ["entradas","Entradas",[
+  ["Provoleta con hongos","Lácteos"],
+  ["Tabla de quesos","Lácteos,Frutos secos"],
+  ["Stracciatella con crudo, tomate y pesto","Lácteos,Frutos secos"],
+  ["Rabas","Moluscos,Gluten,Huevo"],
+  ["Picada de mariscos","Moluscos,Crustáceos,Pescado,Gluten,Huevo,Lácteos"]]],
+ ["ensaladas","Ensaladas",[
+  ["Carroza de fuego","Lácteos,Gluten,Huevo"],
+  ["Ensalada Vitto","Lácteos,Frutos secos"],
+  ["Ensalada Caesar","Gluten,Lácteos,Huevo,Soja"],
+  ["Fresca de calamar","Moluscos"]]],
+ ["sandwiches","Sándwiches",[
+  ["Hamburguesa La Mezquita","Gluten,Lácteos,Huevo*a"],
+  ["Hamburguesa completa","Gluten,Lácteos,Huevo"],
+  ["Milanesa completa","Gluten,Huevo,Lácteos"],
+  ["Focaccia rellena","Gluten,Lácteos,Frutos secos"],
+  ["Crudo y rúcula","Gluten,Lácteos"],
+  ["Crudo y queso","Gluten,Lácteos"],
+  ["Sándwich brie","Gluten,Lácteos,Frutos secos"],
+  ["Cocido y queso","Gluten,Lácteos"],
+  ["Primavera","Gluten,Lácteos"],
+  ["Vegetariano","Gluten"],
+  ["Tostado","Gluten,Lácteos"],
+  ["Tostado primavera","Gluten,Lácteos"]]],
+ ["pastas","Pastas y salsas",[
+  ["Mixta (salsa de tomate y crema)","Gluten,Lácteos,Huevo*p"],
+  ["Zucchini, panceta, ajo y rúcula","Gluten,Huevo*p"],
+  ["Bolognesa blanca","Gluten,Lácteos,Huevo*p"],
+  ["Salsa de langostinos","Crustáceos,Gluten,Lácteos,Huevo*p"]]],
+ ["especiales","Pastas especiales y risotto",[
+  ["Sorrentinos de cordero","Gluten,Huevo,Lácteos"],
+  ["Sorrentinos de salmón rosado","Gluten,Huevo,Lácteos,Pescado,Crustáceos"],
+  ["Sorrentinos de calabaza","Gluten,Huevo,Lácteos,Frutos secos"],
+  ["Pasta oriental","Gluten,Soja,Huevo*p"],
+  ["Risotto negro de langostinos y vieiras","Crustáceos,Moluscos"]]]
+];
+const note={p:"según la pasta",a:"si pedís el huevo agregado"};
+const parse=s=>s.split(",").map(x=>{const[n,f]=x.split("*");return{n,f}});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+let sel=new Set();
+try{(JSON.parse(localStorage.getItem("lm-alg")||"[]")).forEach(a=>A.includes(a)&&sel.add(a))}catch(e){}
+
+const chips=document.getElementById("chips"),menu=document.getElementById("menu"),nav=document.getElementById("nav"),
+ q=document.getElementById("q"),hide=document.getElementById("hide"),status=document.getElementById("status"),empty=document.getElementById("empty");
+
+chips.innerHTML=A.map((a,i)=>`<button type="button" class="chip" id="c${i}" data-a="${esc(a)}" aria-pressed="false">${esc(a)}</button>`).join("");
+nav.innerHTML=M.map(([id,t])=>`<a href="#${id}">${esc(t)}</a>`).join("");
+menu.innerHTML=M.map(([id,t,ds])=>`<section id="${id}"><h3>${esc(t)}</h3>${ds.map(([n,al],j)=>
+ `<article class="dish" data-n="${esc(norm(n))}" data-al="${esc(al)}"><h4>${esc(n)}</h4><div class="tags"></div><span class="verdict"></span></article>`).join("")}</section>`).join("");
+
+function render(){
+ for(const b of chips.children)b.setAttribute("aria-pressed",sel.has(b.dataset.a));
+ const term=norm(q.value.trim());let shown=0,ok=0;
+ for(const d of menu.querySelectorAll(".dish")){
+  const al=parse(d.dataset.al);
+  d.querySelector(".tags").innerHTML=al.map(({n,f})=>{
+   const on=sel.has(n);const cls=f?(on?"maybe":"may"):(on?"hit":"");
+   return `<span class="tag ${cls}">${f?"Puede contener ":""}${esc(f?n.toLowerCase():n)}${f?" ("+note[f]+")":""}</span>`}).join("");
+  const hits=al.filter(x=>sel.has(x.n)&&!x.f).map(x=>x.n),maybe=al.filter(x=>sel.has(x.n)&&x.f).map(x=>x.n);
+  const v=d.querySelector(".verdict");
+  if(!sel.size){v.textContent="";v.className="verdict"}
+  else if(hits.length){v.textContent="Contiene: "+hits.join(", ").toLowerCase();v.className="verdict no"}
+  else if(maybe.length){v.textContent="Consultá al mozo: puede llevar "+maybe.join(", ").toLowerCase();v.className="verdict mid"}
+  else{v.textContent="No lleva lo que seleccionaste";v.className="verdict yes"}
+  const out=(term&&!d.dataset.n.includes(term))||(hide.checked&&hits.length>0);
+  d.classList.toggle("out",out);
+  if(!out){shown++;if(sel.size&&!hits.length&&!maybe.length)ok++}
+ }
+ for(const s of menu.querySelectorAll("section"))s.style.display=s.querySelector(".dish:not(.out)")?"":"none";
+ empty.style.display=shown?"none":"block";
+ status.textContent=sel.size?`Evitando ${[...sel].join(", ").toLowerCase()}: ${ok} plato${ok===1?"":"s"} no lo${sel.size>1?"s":""} lleva${ok===1?"":"n"}.`:"Tocá un alérgeno para marcar la carta.";
+ try{localStorage.setItem("lm-alg",JSON.stringify([...sel]))}catch(e){}
+}
+chips.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const a=b.dataset.a;sel.has(a)?sel.delete(a):sel.add(a);render()});
+document.getElementById("clear").addEventListener("click",()=>{sel.clear();hide.checked=false;render()});
+hide.addEventListener("change",render);q.addEventListener("input",render);
+render();
+}
+</script>
+</body>
+</html>
